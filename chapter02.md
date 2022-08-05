@@ -1,5 +1,5 @@
 # 변수(Variable)
-***
+
 ## 변수(Variable)
 변수 : 값을 저장할 수 있는 ```메모리 상의 공간``` 을 의미, 하나의 변수에 단 하나의 값
 
@@ -84,7 +84,7 @@ final int MAX_SPEED = 10;
 %s = 문자열(string)로 출력
 ```
 
-### 화면에서 입력받기 - Scanner
+## 화면에서 입력받기 - Scanner
 Scanner 클래스를 사용하기 다음 문장의 추가가 필요하다.
 ```
 import java.util.Scanner;
