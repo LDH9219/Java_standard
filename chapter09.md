@@ -441,6 +441,7 @@ public final class Integer extends Number implements Comparable {
 }
 ```
 이처럼 래퍼 클래스들은 객체생성 시에 생성자의 인자로 주어진 각 자료형에 알맞은 값을 내부적으로 저장하고 있으며, 이에 관련된 여러 메소드가 정의되어있다.
+<br>
 ![image](https://user-images.githubusercontent.com/62749021/184496400-66a614e9-a853-4375-b883-fc2bba0b9304.png)
 <br>
 래퍼 클래스들은 모두 ```equals()``` 메소드가 오버라이딩되어 있어 주소값이 아닌 객체가 가지고 있는 값을 비교한다.
