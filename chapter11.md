@@ -230,6 +230,7 @@ LinkedList 클래스의 메소드는 다음과 같다.
 ### Deque(Double-Ended Queue)
 ```Queue```의 변형으로, 한 쪽 끝으로만 추가/삭제가 가능하던 ```Queue```와는 달리, ```Deque(덱 또는 디큐)```는 양쪽 끝에 추가/삭제가 가능하다.
 ```Deque```의 조상은 ```Queue```이며, 구현체로는 ```ArrayDeque```과 ```LinkedList``` 등이 있다.
+<br>
 ![image](https://user-images.githubusercontent.com/62749021/184823954-f5611a6d-8a4e-41dc-8a01-5eaaa8a50a4f.png)
 <br>
 
@@ -473,7 +474,9 @@ class TreeNode{
 중복된 값을 저장하지 못한다.
 ```
 <br>
+
 ![image](https://user-images.githubusercontent.com/62749021/184827657-e57cec52-3bf4-4f66-8a21-4dd007b14edf.png)
+
 <br>
 
 ## 1.11 HashMap과 Hashtable
@@ -586,6 +589,7 @@ List checkedList = checkedList(list , String.class);
 
 ## 1.15 요약
 <br>
+
 ![image](https://user-images.githubusercontent.com/62749021/184829244-47dad01a-8ce6-4e9c-8c8a-e8dca69f6d97.png)
 
 <br>
