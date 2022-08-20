@@ -264,7 +264,7 @@ public static void printAll(ArrayList<? extends product> list, ArrayList<? exten
 public static <T extends Product> void printAll(ArrayList<T> list, ArrayList<T> list2)
 ```
 ## 1.8 지네릭 타입의 형변환
-```
+```java
 Box box = null;
 Box<Object> objBox = null;
 
