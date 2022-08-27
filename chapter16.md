@@ -82,3 +82,220 @@ TCP/IP프로토콜에 포함된 프로토콜. OSI 7계층의 전송계층에 해
 TCP소켓 프로그래밍에서는 Socket과 ServerSocket을 사용하지만 UDP소켓 프로그래밍에서는 DatagramSocket과 DatagramPacket을 사용.
 UDP는 연결지향적이지 않으므로 연결요청을 받아줄 서버소켓이 필요없다.
 DatagramSocket간에 데이터(DatagramPacket)를 주고 받는다.
+
+### TCP 실습
+```java
+//client
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class Client {
+	
+	final static String SERVER_IP = "127.0.0.1"; 
+	final static int SERVER_PORT = 1225;
+	final static String MESSAGE_TO_SERVER = "Hi, Server";
+	
+	public static void main(String[] args) {
+		
+		Socket socket = null;
+		
+		try {
+			/** 소켓통신 시작 */
+			socket = new Socket(SERVER_IP,SERVER_PORT);
+			System.out.println("socket 연결");
+		
+			/**	Client에서 Server로 보내기 위한 통로 */
+			OutputStream os = socket.getOutputStream();
+			/**	Server에서 보낸 값을 받기 위한 통로 */
+			InputStream is = socket.getInputStream();
+			
+			os.write( MESSAGE_TO_SERVER.getBytes() );
+			os.flush();
+			
+			byte[] data = new byte[16];
+			int n = is.read(data);
+			final String resultFromServer = new String(data,0,n);
+			
+			System.out.println(resultFromServer);
+			
+			socket.close();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+}
+```
+```java
+//Server
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server extends Thread {
+	
+	final static int SERVER_PORT = 1225;
+	final static String MESSAGE_TO_SERVER = "Hello, Client";
+	
+	public static void main(String[] args) {
+		
+		ServerSocket serverSocket = null;
+		
+		try {
+			serverSocket = new ServerSocket(SERVER_PORT);
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			while (true) {
+				System.out.println("socket 연결 대기");
+				Socket socket = serverSocket.accept();
+				System.out.println("host : "+socket.getInetAddress()+" | 통신 연결 성공");
+				
+				/**	Server에서 보낸 값을 받기 위한 통로 */
+				InputStream is = socket.getInputStream();
+				/**	Server에서 Client로 보내기 위한 통로 */
+				OutputStream os = socket.getOutputStream();
+				
+				byte[] data = new byte[16];
+				int n = is.read(data);
+				final String messageFromClient = new String(data,0,n);
+				
+				System.out.println(messageFromClient);
+				
+				os.write( MESSAGE_TO_SERVER.getBytes() );
+				os.flush();
+				
+				is.close();
+				os.close();
+				socket.close();
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+}
+
+class SocketRun implements Runnable {
+
+	private Socket socket = null;
+	
+	SocketRun( Socket socket ){
+		this.socket = socket;
+	}
+	
+	@Override
+	public void run() {
+		
+	}
+}
+```
+
+### UDP 실습
+```java
+//Server
+package networkingEx; 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.omg.CORBA.PUBLIC_MEMBER;
+
+public class UdpServer {
+    final static int SERVER_PORT = 8080;
+
+     public void start() throws IOException {       
+		// 포트 8080번을 사용하는 소켓을 생성한다.
+		DatagramSocket socket = new DatagramSocket(SERVER_PORT);
+      	DatagramPacket inPacket, outPacket;
+
+		byte[] inMsg = new byte[10];
+ 		byte[] outMsg;         
+
+		System.out.println("UDP 서버가 실행되었습니다.");
+
+		while (true) {
+			// 데이터를 수신하기 위한 패킷을 생성한다.
+			inPacket = new DatagramPacket(inMsg, inMsg.length);
+			// 패킷을 통해 데이터를 수신(receive)한다.            
+			socket.receive(inPacket);
+			// 수신한 패킷으로 부터 client의 IP주소와 Port를 얻는다.
+			InetAddress address = inPacket.getAddress();
+			int port = inPacket.getPort();
+			// 서버의 현재 시간을 시분초 형태([hh:mm:ss])로 반환한다.            
+			SimpleDateFormat sdf = new SimpleDateFormat("[hh:mm:ss]");
+			String time = sdf.format(new Date());
+			outMsg = time.getBytes(); // time을 byte배열로 반환한다.
+
+			// 패킷을 생성하여 client에게 전송(send)한다.
+			outPacket = new DatagramPacket(outMsg, outMsg.length, address, port);
+			socket.send(outPacket);
+        }    
+	}
+	public static void main(String args[]) {
+        try {
+            // UDP 서버를 실행시킨다.
+            new UdpServer().start();
+        } catch (IOException ie) {
+            ie.printStackTrace();
+        }
+    }
+}
+```
+```java
+//client
+package networkingEx;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+public class UdpClient {
+	final static int SERVER_PORT = 7777;
+	final static String SERVER_IP = "127.0.0.1";
+
+	public void start() throws IOException, UnknownHostException {
+		DatagramSocket datagramSocket = new DatagramSocket();
+		InetAddress serverAddress = InetAddress.getByName(SERVER_IP);
+
+		// 데이터가 저장된 공간으로 byte배열을 생성한다.
+		byte[] msg = new byte[100];
+		DatagramPacket outPacket = new DatagramPacket(msg, 1, serverAddress, SERVER_PORT);
+		DatagramPacket inPacket = new DatagramPacket(msg, msg.length);
+
+		// DatagramPacket을 전송한다.
+		datagramSocket.send(outPacket);
+
+		// DatagramPacket을 수신한다.
+		datagramSocket.receive(inPacket);
+
+		System.out.println("current server time : " + new String(inPacket.getData()));
+
+		datagramSocket.close();
+	}
+
+	public static void main(String[] args) {
+		try {
+			new UdpClient().start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
+```
